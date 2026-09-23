@@ -69,18 +69,21 @@ char* lex_pop(lex_t* stream)
 
     skip_format(stream);
 
+    bool in_string = false;
     lex_state_t state = get(CHAR);
     for (;lex_has(stream);)
     {
         lex_state_t kind = get(CHAR);
 
         if (CHAR == '\n') stream->line_no++;
-        //if (state == LEX_STATE_QUOTE) stream->in_string ^= true;
 
-        if (state != kind)// && !stream->in_string)
+        if (state != kind) if (!in_string)
             goto done;
 
-        //if (state != LEX_STATE_QUOTE)
+        if (kind == LEX_STATE_QUOTE) in_string ^= true;
+        else
+
+        // spooky action at a distance
         *iter++ = CHAR;
         
         stream->src_idx++;
