@@ -25,9 +25,9 @@ typedef struct
 
 
 lex_t lex_make(char* path);
-char* lex_peek(lex_t* lex);
-char* lex_pop(lex_t* lex);
-bool  lex_has(lex_t* lex);
-void  lex_expect(lex_t* lex, const char* word);
+char* lex_peek  (lex_t* stream);
+char* lex_pop   (lex_t* stream);
+bool  lex_has   (lex_t* stream);
+void  lex_expect(lex_t* stream, const char* word);
 
 #endif

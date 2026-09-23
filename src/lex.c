@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 
 lex_t lex_make(char* path)
@@ -87,5 +88,27 @@ done:
     return buffer;
 }
 
+char* lex_peek(lex_t* stream)
+{
+    size_t src_idx = stream->src_idx;
+    char* ptr = lex_pop(stream);
+    stream->src_idx = src_idx;
+    return ptr;
+}
+
+void lex_expect(lex_t* stream, const char* word)
+{
+    char* token = lex_pop(stream);
+
+    if (strcmp(word, token))
+    {
+        fprintf(
+            stderr, 
+            "Error on line %d in file %s: Expected `%s` but got `%s`",
+            stream->line_no, stream->path, word, token
+        );
+        exit(1);
+    }
+}
 
 
