@@ -42,9 +42,9 @@ lex_state_t get(char c)
         case ')' : return LEX_STATE_WORD;
         case '.' : return LEX_STATE_DOT;
         case '"' : return LEX_STATE_QUOTE;
+        case '\0':
         case ' ' : 
         case '\n': return LEX_STATE_FORMAT;
-        case '\0': return LEX_STATE_TERMINATOR;
         default  : return LEX_STATE_SYMBOL;
     }
 }
@@ -54,36 +54,42 @@ bool lex_has(lex_t* stream)
     return stream->src_idx < stream->src_len;
 }
 
+#define CHAR (stream->src[stream->src_idx])
+
+void skip_format(lex_t* stream)
+{
+    while (get(CHAR) == LEX_STATE_FORMAT)
+        stream->src_idx++;
+}
+
 char* lex_pop(lex_t* stream)
 {
     static char buffer[1 << 16];
     char* iter = buffer;
-    lex_state_t state = LEX_STATE_INVALID;
+    lex_state_t state = get(CHAR);
+
+    skip_format(stream);
 
     for (;lex_has(stream);)
     {
-        char c = stream->src[stream->src_idx];
-        lex_state_t kind = get(c);
+        lex_state_t kind = get(CHAR);
 
-        if (c == '\n') stream->line_no++;
+        if (CHAR == '\n') stream->line_no++;
         //if (state == LEX_STATE_QUOTE) stream->in_string ^= true;
 
-        if (state != LEX_STATE_INVALID)
         if (state != kind)// && !stream->in_string)
-        {
-            if (state != LEX_STATE_FORMAT)
-                goto done;
-            iter = buffer;
-        }
+            goto done;
 
         //if (state != LEX_STATE_QUOTE)
-        *iter++ = c;
+        *iter++ = CHAR;
         
         stream->src_idx++;
         state = kind;
     }
 
 done:
+    skip_format(stream);
+
     *iter = '\0';
     return buffer;
 }
