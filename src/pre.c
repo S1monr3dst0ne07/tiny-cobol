@@ -3,11 +3,9 @@
 // - compute data layout in virtual file.  
 // - result expression references to fields.
 
-//#include "pre.h"
+#include "pre.h"
 #include "common.h"
 #include "ast.h"
-#include <string.h>
-#include <stdlib.h>
 
 
 uint64_t pre_field_sizes(ast_field_t* field)

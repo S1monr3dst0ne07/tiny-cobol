@@ -4,9 +4,6 @@
 #include "common.h"
 #include "lex.h"
 #include "ast.h"
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 
 char* parse_picture(lex_t* stream)

@@ -1,5 +1,5 @@
 
-#include <stdio.h>
+#include "common.h"
 #include "lex.h"
 #include "ast.h"
 #include "parse.h"

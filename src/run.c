@@ -1,11 +1,7 @@
 
+#include "common.h"
 #include "run.h"
 #include "ast.h"
-
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
 
 void run_proc(ast_proc_t* node);
 
