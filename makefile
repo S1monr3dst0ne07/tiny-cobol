@@ -1,6 +1,6 @@
 .PHONY: build
 
-TARGET=prg/hello.cob
+TARGET=prg/fib.cob
 
 run: build
 	./main $(TARGET)

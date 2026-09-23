@@ -71,6 +71,31 @@ void run_move(struct ast_op_s* node)
     );
 }
 
+void run_op(ast_stmt_t* node)
+{
+    uint64_t left  = load_expr(node->content.op.left);
+    uint64_t right = load_expr(node->content.op.right);
+    uint64_t res = 0;
+
+    switch(node->kind)
+    {
+        case AST_STMT_KIND_ADD: res = left + right; break;
+        case AST_STMT_KIND_SUB: res = left - right; break;
+        case AST_STMT_KIND_MUL: res = left * right; break;
+        case AST_STMT_KIND_DIV: res = left / right; break;
+    }
+
+    ast_expr_t* target = node->content.op.target;
+    ast_field_t* dst = target->ref;
+    if (dst == NULL) lex_error(
+        target->info, 
+        "Operate into non-field expression\n"
+    );
+
+    // HYPER scuffed lol, should work tho
+    sprintf(dst->base, "%.*d", dst->outer_size, res);
+}
+
 void run_stmt(ast_stmt_t* node)
 {
     switch (node->kind)
@@ -89,7 +114,7 @@ void run_stmt(ast_stmt_t* node)
         case AST_STMT_KIND_SUB:
         case AST_STMT_KIND_MUL:
         case AST_STMT_KIND_DIV:
-            //run_op(&node->content.op);
+            run_op(node);
             break;
     }
 }

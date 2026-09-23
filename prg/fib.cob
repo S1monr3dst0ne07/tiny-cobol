@@ -1,9 +1,9 @@
 
        data division.
        working-storage section.
-       01 ws-a pic 9(4) value 1.
-       01 ws-b pic 9(4) value 1.
-       01 ws-c pic 9(4) value 0.
+       01 ws-a pic 9(4) value 0001.
+       01 ws-b pic 9(4) value 0001.
+       01 ws-c pic 9(4) value 0000.
 
        procedure division.
        start.
@@ -14,4 +14,6 @@
            add ws-a to ws-b giving ws-c.
            move ws-b to ws-a.
            move ws-c to ws-b.
+
+
 
