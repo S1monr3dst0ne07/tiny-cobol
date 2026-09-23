@@ -196,7 +196,7 @@ void parse_proc_div(lex_t* stream, ast_prog_t* node)
 
 ast_prog_t* parse_prog(lex_t* stream)
 {
-    ast_prog_t* node = malloc(sizeof(ast_prog_t));
+    ast_prog_t* node = calloc(1, sizeof(ast_prog_t));
     parse_data_div(stream, node);
     parse_proc_div(stream, node);
 

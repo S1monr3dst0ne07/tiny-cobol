@@ -78,10 +78,13 @@ void pre_proc(ast_prog_t* root, ast_proc_t* proc)
 
 void pre_prog(ast_prog_t* root)
 {
-    uint64_t size = pre_field_sizes(root->data);
-    root->mem = malloc(size); // virtual file.
-
-    pre_field_address(root->mem, root->data);
+    if (root->data)
+    {
+        uint64_t size = pre_field_sizes(root->data);
+        root->mem = malloc(size); // virtual file.
+    
+        pre_field_address(root->mem, root->data);
+    }
 
     pre_proc(root, root->proc);
 }
