@@ -1,0 +1,7 @@
+
+
+
+- unify run_move and run_op
+- fix node->content.op assignments
+    -target should always be target
+    - make polymorphic
