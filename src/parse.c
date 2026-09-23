@@ -42,7 +42,7 @@ char* parse_picture(lex_t* stream)
 
 ast_field_t* parse_field(lex_t* stream)
 {
-    ast_field_t* node = malloc(sizeof(ast_field_t));
+    ast_field_t* node = calloc(1, sizeof(ast_field_t));
     node->level = atoi  (lex_pop(stream));
     node->name  = strdup(lex_pop(stream));
     node->occurs = 1; // present by nature of existing

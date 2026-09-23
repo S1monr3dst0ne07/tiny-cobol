@@ -31,6 +31,14 @@ void pre_field_address(char* base, ast_field_t* field)
     if (field->next ) pre_field_address(base + field->outer_size, field->next);
 }
 
+void pre_field_init(ast_field_t* field)
+{
+    if (field->value)
+        memcpy(field->base, field->value, strlen(field->value));
+
+    if (field->child) pre_field_init(field->child);
+    if (field->next ) pre_field_init(field->next);
+}
 
 
 void pre_expr(ast_prog_t* root, ast_expr_t* node)
@@ -94,6 +102,7 @@ void pre_prog(ast_prog_t* root)
         root->mem = malloc(size); // virtual file.
     
         pre_field_address(root->mem, root->data);
+        pre_field_init(root->data); // initial by `value` parameter
     }
 
     pre_proc(root, root->proc);
