@@ -66,10 +66,10 @@ char* lex_pop(lex_t* stream)
 {
     static char buffer[1 << 16];
     char* iter = buffer;
-    lex_state_t state = get(CHAR);
 
     skip_format(stream);
 
+    lex_state_t state = get(CHAR);
     for (;lex_has(stream);)
     {
         lex_state_t kind = get(CHAR);
