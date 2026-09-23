@@ -85,7 +85,8 @@ void parse_ws(lex_t* stream, ast_prog_t* node)
 ast_expr_t* parse_expr(lex_t* stream)
 {
     ast_expr_t* node = malloc(sizeof(ast_expr_t));
-    node->content = lex_pop(stream);
+    node->content = strdup(lex_pop(stream));
+    node->ref = NULL;
     return node;
 }
 
