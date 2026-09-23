@@ -89,18 +89,25 @@ ast_expr_t* parse_expr(lex_t* stream)
     node->ref = NULL;
     return node;
 }
+ast_proc_ref_t* parse_proc_ref(lex_t* stream)
+{
+    ast_proc_ref_t* node = malloc(sizeof(ast_expr_t));
+    node->name = strdup(lex_pop(stream));
+    node->ref = NULL;
+    return node;
+}
 
 ast_stmt_t* parse_perform(lex_t* stream)
 {
     ast_stmt_t* node = malloc(sizeof(ast_stmt_t));
     lex_expect(stream, "perform");
-    char* name = strdup(lex_pop(stream));
+    ast_proc_ref_t* ref = parse_proc_ref(stream);
 
     char* word = lex_peek(stream);
     if (!strcmp(word, "exactly")) {
         lex_expect(stream, "exactly");
         node->kind = AST_STMT_KIND_PERFORM_TIMES;
-        node->content.perform_times.proc_name = name;
+        node->content.perform_times.ref = ref;
         node->content.perform_times.times     = parse_expr(stream);
         lex_expect(stream, "times");
     }

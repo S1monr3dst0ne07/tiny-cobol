@@ -24,12 +24,19 @@ typedef struct ast_field_s
 } ast_field_t;
 
 
+struct ast_proc_s;
 
 typedef struct 
 {
     char* content;
     ast_field_t* ref; // NULL for literal
-}ast_expr_t;
+} ast_expr_t;
+
+typedef struct
+{
+    char* name;
+    struct ast_proc_s* ref;
+} ast_proc_ref_t;
 
 typedef enum
 {
@@ -56,7 +63,7 @@ typedef struct ast_stmt_s
         } op;
         struct ast_perform_times_s
         {
-            char* proc_name;
+            ast_proc_ref_t* ref;
             ast_expr_t* times;
         } perform_times;
         struct ast_display_s

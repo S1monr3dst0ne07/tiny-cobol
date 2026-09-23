@@ -41,7 +41,16 @@ void pre_expr(ast_prog_t* root, ast_expr_t* node)
     for (; iter; iter = iter->next)
         if (!strcmp(iter->name, node->content))
             node->ref = iter;
+}
 
+void pre_proc_ref(ast_prog_t* root, ast_proc_ref_t* node)
+{
+    if (node == NULL) return;
+
+    ast_proc_t* iter = root->proc;
+    for (; iter; iter = iter->next)
+        if (!strcmp(iter->name, node->name))
+            node->ref = iter;
 }
 
 void pre_stmt(ast_prog_t* root, ast_stmt_t* node)
@@ -59,7 +68,8 @@ void pre_stmt(ast_prog_t* root, ast_stmt_t* node)
             break;
 
         case AST_STMT_KIND_PERFORM_TIMES:
-            pre_expr(root, node->content.perform_times.times);
+            pre_proc_ref(root, node->content.perform_times.ref);
+            pre_expr    (root, node->content.perform_times.times);
             break;
 
         case AST_STMT_KIND_DISPLAY:
