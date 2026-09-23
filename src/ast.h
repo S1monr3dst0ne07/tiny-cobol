@@ -46,20 +46,20 @@ typedef struct ast_stmt_s
 {
     ast_stmt_kind_t kind;
     struct ast_stmt_s* next;
-    union 
+    union
     {
-        struct
+        struct ast_op_s
         {
             ast_expr_t* left;
             ast_expr_t* right;
             ast_expr_t* target;
         } op;
-        struct 
+        struct ast_perform_times_s
         {
             char* proc_name;
             ast_expr_t* times;
         } perform_times;
-        struct 
+        struct ast_display_s
         {
             ast_expr_t* target;
         } display;
