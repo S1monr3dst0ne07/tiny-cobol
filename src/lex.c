@@ -104,7 +104,7 @@ void lex_expect(lex_t* stream, const char* word)
     {
         fprintf(
             stderr, 
-            "Error on line %d in file %s: Expected `%s` but got `%s`",
+            "Error on line %d in file %s: Expected `%s` but got `%s`\n",
             stream->line_no, stream->path, word, token
         );
         exit(1);

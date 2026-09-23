@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include "lex.h"
+#include "ast.h"
+#include "parse.h"
 
 
 int main(int argc, char** argv)
@@ -14,13 +16,7 @@ int main(int argc, char** argv)
 
     char* path = argv[1];
     lex_t lex = lex_make(path);
-    lex_t* stream = &lex;
-
-    while (lex_has(stream))
-    {
-        printf("%s\n", lex_pop(stream));
-    }
-
+    ast_prog_t* root = parse_prog(&lex);
 
     return 0;
 }
