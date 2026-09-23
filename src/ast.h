@@ -25,7 +25,10 @@ typedef struct ast_field_s
 
 
 
-typedef char* ast_expr_t;
+typedef struct 
+{
+    char* content;
+}ast_expr_t;
 
 typedef enum
 {
