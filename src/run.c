@@ -4,6 +4,10 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+void run_proc(ast_proc_t* node);
 
 typedef struct
     // view into virtual file memory.
@@ -30,10 +34,45 @@ mem_view_t eval_expr(ast_expr_t* expr)
     };
 }
 
+uint64_t load_expr(ast_expr_t* expr)
+{
+    mem_view_t string = eval_expr(expr);
+    uint64_t value = 0;
+
+    for (int i = 0; i < string.len; i++)
+    if (isdigit(string.ptr[i]))
+        value = (value * 10) + (string.ptr[i] - '0');
+
+    return value;
+}
+
 void run_display(struct ast_display_s* node)
 {
     mem_view_t res = eval_expr(node->target);
     printf("%.*s\n", res.len, res.ptr);
+}
+
+void run_perform_times(struct ast_perform_times_s* node)
+{
+    uint64_t times = load_expr(node->times);
+    for (uint64_t i = 0; i < times; i++)
+        run_proc(node->ref->ref);
+
+}
+void run_move(struct ast_op_s* node)
+{
+    mem_view_t   src = eval_expr(node->left);
+    ast_field_t* dst = node->right->ref;
+    if (dst == NULL) lex_error(
+        node->right->info, 
+        "Move into non-field expression\n"
+    );
+
+    memcpy(
+        dst->base,
+        src.ptr,
+        src.len
+    );
 }
 
 void run_stmt(ast_stmt_t* node)
@@ -44,9 +83,12 @@ void run_stmt(ast_stmt_t* node)
             run_display(&node->content.display);
             break;
         case AST_STMT_KIND_PERFORM_TIMES:
-            //run_perform_times(&node->content.perform_times);
+            run_perform_times(&node->content.perform_times);
             break;
         case AST_STMT_KIND_MOVE:
+            run_move(&node->content.op);
+            break;
+
         case AST_STMT_KIND_ADD:
         case AST_STMT_KIND_SUB:
         case AST_STMT_KIND_MUL:

@@ -2,6 +2,7 @@
 #define H_AST
 
 #include "common.h"
+#include "lex.h"
 
 typedef struct ast_field_s
 {
@@ -28,6 +29,8 @@ struct ast_proc_s;
 
 typedef struct 
 {
+    lex_info_t info;
+
     char* content;
     ast_field_t* ref; // NULL for literal
 } ast_expr_t;

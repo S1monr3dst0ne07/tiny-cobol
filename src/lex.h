@@ -17,10 +17,16 @@ typedef enum
 typedef struct
 {
     char* path;
+    size_t line_no;
+} lex_info_t;
+
+typedef struct
+{
+    lex_info_t info;
+
     char* src;
     size_t src_idx;
     size_t src_len;
-    size_t line_no;
 } lex_t;
 
 
@@ -29,5 +35,7 @@ char* lex_peek  (lex_t* stream);
 char* lex_pop   (lex_t* stream);
 bool  lex_has   (lex_t* stream);
 void  lex_expect(lex_t* stream, const char* word);
+void  lex_error (lex_info_t info, const char* pattern, ...);
+lex_info_t lex_copy_info(lex_t* stream);
 
 #endif

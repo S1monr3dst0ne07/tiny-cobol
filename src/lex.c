@@ -1,11 +1,7 @@
 
+#include "common.h"
 #include "lex.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-
+#include <stdarg.h>
 
 lex_t lex_make(char* path)
 {
@@ -23,11 +19,13 @@ lex_t lex_make(char* path)
 
 
     return (lex_t) {
-        .path = path,
+        .info = (lex_info_t) {
+            .path = path,
+            .line_no = 1,
+        },
         .src = buffer,
         .src_idx = 0,
         .src_len = len,
-        .line_no = 1,
     };
 }
 
@@ -75,7 +73,7 @@ char* lex_pop(lex_t* stream)
     {
         lex_state_t kind = get(CHAR);
 
-        if (CHAR == '\n') stream->line_no++;
+        if (CHAR == '\n') stream->info.line_no++;
 
         if (state != kind) if (!in_string)
             goto done;
@@ -105,19 +103,43 @@ char* lex_peek(lex_t* stream)
     return ptr;
 }
 
+void lex_error(lex_info_t info, const char* pattern, ...)
+{
+    va_list args;
+    va_start(args, pattern);
+
+    char buffer[4096];
+    vsprintf(buffer, pattern, args);
+
+    fprintf(
+        stderr, 
+        "Error on line %d in file %s: %s", 
+        info.line_no, 
+        info.path, 
+        buffer
+    );
+    exit(1);
+}
+
 void lex_expect(lex_t* stream, const char* word)
 {
     char* token = lex_pop(stream);
 
     if (strcmp(word, token))
-    {
-        fprintf(
-            stderr, 
-            "Error on line %d in file %s: Expected `%s` but got `%s`\n",
-            stream->line_no, stream->path, word, token
+        lex_error(
+            stream->info, 
+            "Expected `%s` but got `%s`\n",
+            word, 
+            token
         );
-        exit(1);
-    }
 }
 
+
+lex_info_t lex_copy_info(lex_t* stream)
+{
+    return (lex_info_t) {
+        .path    = strdup(stream->info.path),
+        .line_no =        stream->info.line_no
+    };
+}
 
