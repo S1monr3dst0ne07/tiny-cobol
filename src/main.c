@@ -3,6 +3,7 @@
 #include "lex.h"
 #include "ast.h"
 #include "parse.h"
+#include "pre.h"
 
 
 int main(int argc, char** argv)
@@ -17,6 +18,7 @@ int main(int argc, char** argv)
     char* path = argv[1];
     lex_t lex = lex_make(path);
     ast_prog_t* root = parse_prog(&lex);
+    pre_prog(root);
 
     return 0;
 }

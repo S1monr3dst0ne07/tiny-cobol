@@ -45,6 +45,7 @@ ast_field_t* parse_field(lex_t* stream)
     ast_field_t* node = malloc(sizeof(ast_field_t));
     node->level = atoi  (lex_pop(stream));
     node->name  = strdup(lex_pop(stream));
+    node->occurs = 1; // present by nature of existing
 
     while (lex_peek(stream)[0] != '.')
     {

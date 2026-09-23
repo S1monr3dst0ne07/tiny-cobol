@@ -16,7 +16,7 @@ typedef struct ast_field_s
     struct ast_field_s* child;
     struct ast_field_s* next;
 
-    void* base_address;
+    void* base;
 
     // outer_size = inner_size * occur
     uint64_t inner_size;
@@ -28,6 +28,7 @@ typedef struct ast_field_s
 typedef struct 
 {
     char* content;
+    ast_field_t* ref; // NULL for literal
 }ast_expr_t;
 
 typedef enum
@@ -77,6 +78,10 @@ typedef struct
 {
     ast_field_t* data;
     ast_proc_t*  proc;
+    
+    // virtual file allocated by `pre_prog`.
+    // all COBOL data is stored in a big big nd-table.
+    char* mem;
 } ast_prog_t;
 
 
