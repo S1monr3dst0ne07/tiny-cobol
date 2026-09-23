@@ -78,6 +78,101 @@ void parse_ws(lex_t* stream, ast_prog_t* node)
 }
 
 
+
+
+
+ast_expr_t* parse_expr(lex_t* stream)
+{
+    lex_pop(stream);
+}
+
+ast_stmt_t* parse_perform(lex_t* stream)
+{
+    ast_stmt_t* node = malloc(sizeof(ast_stmt_t));
+    lex_expect(stream, "perform");
+    char* name = strdup(lex_pop(stream));
+
+    char* word = lex_peek(stream);
+    if (!strcmp(word, "exactly")) {
+        lex_expect(stream, "exactly");
+        node->kind = AST_STMT_KIND_PERFORM_TIMES;
+        node->content.perform_times.proc_name = name;
+        node->content.perform_times.times     = parse_expr(stream);
+        lex_expect(stream, "times");
+    }
+    lex_expect(stream, ".");
+
+    return node;
+}
+
+ast_stmt_t* parse_display(lex_t* stream)
+{
+    ast_stmt_t* node = malloc(sizeof(ast_stmt_t));
+    node->kind = AST_STMT_KIND_DISPLAY;
+    lex_expect(stream, "display");
+    node->content.display.target = parse_expr(stream);
+    lex_expect(stream, ".");
+    return node;
+}
+
+ast_stmt_t* parse_op(lex_t* stream)
+{
+    ast_stmt_t* node = malloc(sizeof(ast_stmt_t));
+    char* verb = lex_pop(stream);
+
+    /**/ if (!strcmp(verb, "add"))  node->kind = AST_STMT_KIND_ADD;
+    else if (!strcmp(verb, "move")) node->kind = AST_STMT_KIND_MOVE;
+
+    node->content.op.left  = parse_expr(stream);
+    lex_pop(stream);
+    node->content.op.right = parse_expr(stream);
+
+    node->content.op.target = NULL;
+    if (!strcmp(lex_peek(stream), "giving"))
+    {
+        lex_pop(stream);
+        node->content.op.target = parse_expr(stream);
+    }
+    lex_expect(stream, ".");
+
+    return node;
+}
+
+ast_stmt_t* parse_stmts(lex_t* stream)
+{
+    ast_stmt_t hook;
+    ast_stmt_t* iter = &hook;
+
+    while (true)
+    {
+        ast_stmt_t* new;
+        char* token = lex_peek(stream);
+        /**/ if (!strcmp(token, "perform")) new = parse_perform(stream);
+        else if (!strcmp(token, "display")) new = parse_display(stream);
+        else if (!strcmp(token, "add")    ) new = parse_op(stream);
+        else if (!strcmp(token, "move")   ) new = parse_op(stream);
+        else break;
+
+        new->next  = NULL;
+        iter->next = new;
+        iter = new;
+    }
+
+    return hook.next;
+}
+
+ast_proc_t* parse_proc(lex_t* stream)
+{
+    ast_proc_t* node = malloc(sizeof(ast_proc_t));
+    node->name = strdup(lex_pop(stream));
+    lex_expect(stream, ".");
+    node->stmt = parse_stmts(stream);
+    node->next = lex_has(stream) ? parse_proc(stream) : NULL;
+
+    return node;
+}
+
+
 void parse_data_div(lex_t* stream, ast_prog_t* node)
 {
     lex_expect(stream, "data");
@@ -88,10 +183,19 @@ void parse_data_div(lex_t* stream, ast_prog_t* node)
     if (!strcmp(token, "working-storage")) parse_ws(stream, node);
 }
 
+void parse_proc_div(lex_t* stream, ast_prog_t* node)
+{
+    lex_expect(stream, "procedure");
+    lex_expect(stream, "division");
+    lex_expect(stream, ".");
+    node->proc = parse_proc(stream);
+}
+
 ast_prog_t* parse_prog(lex_t* stream)
 {
     ast_prog_t* node = malloc(sizeof(ast_prog_t));
     parse_data_div(stream, node);
+    parse_proc_div(stream, node);
 
     return node;
 }
