@@ -66,7 +66,12 @@ void run_accept(struct ast_accept_s* node)
 {
     FILE* stream = stdin;
     mem_view_t res = eval_expr(node->target);
-    fscanf(stream, "%s", res.ptr);
+
+    char c;
+    for (size_t i = 0; i < res.len; i++)
+        if ((c = fgetc(stream)) != '\n')
+            res.ptr[i] = c;
+        else break;
 }
 
 void run_perform_times(struct ast_perform_times_s* node)
