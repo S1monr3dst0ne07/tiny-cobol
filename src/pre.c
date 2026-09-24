@@ -39,14 +39,18 @@ void pre_field_init(ast_field_t* field)
 }
 
 
-void pre_expr(ast_prog_t* root, ast_expr_t* node)
+void pre_expr(ast_field_t* field, ast_expr_t* node)
 {
     if (node == NULL) return;
+    if (field == NULL) return;
 
-    ast_field_t* iter = root->data;
-    for (; iter; iter = iter->next)
-        if (!strcmp(iter->name, node->content))
-            node->ref = iter;
+    if (!strcmp(field->name, node->content))
+        node->ref = field;
+    else
+    {
+        pre_expr(field->next, node);
+        pre_expr(field->child, node);
+    }
 }
 
 void pre_proc_ref(ast_prog_t* root, ast_proc_ref_t* node)
@@ -61,6 +65,7 @@ void pre_proc_ref(ast_prog_t* root, ast_proc_ref_t* node)
 
 void pre_stmt(ast_prog_t* root, ast_stmt_t* node)
 {
+    ast_field_t* data = root->data;
     switch (node->kind)
     {
         case AST_STMT_KIND_MOVE:
@@ -68,18 +73,18 @@ void pre_stmt(ast_prog_t* root, ast_stmt_t* node)
         case AST_STMT_KIND_SUB:
         case AST_STMT_KIND_MUL:
         case AST_STMT_KIND_DIV:
-            pre_expr(root, node->content.op.left);
-            pre_expr(root, node->content.op.right);
-            pre_expr(root, node->content.op.target);
+            pre_expr(data, node->content.op.left);
+            pre_expr(data, node->content.op.right);
+            pre_expr(data, node->content.op.target);
             break;
 
         case AST_STMT_KIND_PERFORM_TIMES:
             pre_proc_ref(root, node->content.perform_times.ref);
-            pre_expr    (root, node->content.perform_times.times);
+            pre_expr    (data, node->content.perform_times.times);
             break;
 
         case AST_STMT_KIND_DISPLAY:
-            pre_expr(root, node->content.display.target);
+            pre_expr(data, node->content.display.target);
             break;
     }
 
