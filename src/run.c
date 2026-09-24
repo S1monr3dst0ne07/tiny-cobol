@@ -62,6 +62,12 @@ void run_display(struct ast_display_s* node)
     fwrite(res.ptr, res.len, sizeof(char), stream);
     fputs("\n", stream);
 }
+void run_accept(struct ast_accept_s* node)
+{
+    FILE* stream = stdin;
+    mem_view_t res = eval_expr(node->target);
+    fscanf(stream, "%s", res.ptr);
+}
 
 void run_perform_times(struct ast_perform_times_s* node)
 {
@@ -113,6 +119,9 @@ void run_stmt(ast_stmt_t* node)
     {
         case AST_STMT_KIND_DISPLAY:
             run_display(&node->content.display);
+            break;
+        case AST_STMT_KIND_ACCEPT:
+            run_accept(&node->content.accept);
             break;
         case AST_STMT_KIND_PERFORM_TIMES:
             run_perform_times(&node->content.perform_times);

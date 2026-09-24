@@ -47,6 +47,7 @@ typedef enum
 {
     AST_STMT_KIND_PERFORM_TIMES,
     AST_STMT_KIND_DISPLAY,
+    AST_STMT_KIND_ACCEPT,
     AST_STMT_KIND_MOVE, // target = left
     AST_STMT_KIND_ADD,  // target = left + right
     AST_STMT_KIND_SUB,  // target = left - right
@@ -75,6 +76,10 @@ typedef struct ast_stmt_s
         {
             ast_expr_t* target;
         } display;
+        struct ast_accept_s
+        {
+            ast_expr_t* target;
+        } accept;
     } content;
 } ast_stmt_t;
 

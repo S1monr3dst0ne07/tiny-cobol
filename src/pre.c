@@ -90,6 +90,10 @@ void pre_stmt(ast_prog_t* root, ast_stmt_t* node)
         case AST_STMT_KIND_DISPLAY:
             pre_expr(data, node->content.display.target);
             break;
+
+        case AST_STMT_KIND_ACCEPT:
+            pre_expr(data, node->content.accept.target);
+            break;
     }
 
     if (node->next) pre_stmt(root, node->next);

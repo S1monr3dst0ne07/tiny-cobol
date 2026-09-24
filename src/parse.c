@@ -125,6 +125,16 @@ ast_stmt_t* parse_display(lex_t* stream)
     return node;
 }
 
+ast_stmt_t* parse_accept(lex_t* stream)
+{
+    ast_stmt_t* node = malloc(sizeof(ast_stmt_t));
+    node->kind = AST_STMT_KIND_ACCEPT;
+    lex_expect(stream, "accept");
+    node->content.accept.target = parse_expr(stream);
+    lex_expect(stream, ".");
+    return node;
+}
+
 ast_stmt_t* parse_op(lex_t* stream)
 {
     ast_stmt_t* node = malloc(sizeof(ast_stmt_t));
@@ -159,6 +169,7 @@ ast_stmt_t* parse_stmts(lex_t* stream)
         char* token = lex_peek(stream);
         /**/ if (!strcmp(token, "perform")) new = parse_perform(stream);
         else if (!strcmp(token, "display")) new = parse_display(stream);
+        else if (!strcmp(token, "accept" )) new = parse_accept(stream);
         else if (!strcmp(token, "add")    ) new = parse_op(stream);
         else if (!strcmp(token, "move")   ) new = parse_op(stream);
         else break;
