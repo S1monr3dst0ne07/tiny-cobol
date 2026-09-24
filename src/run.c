@@ -44,8 +44,11 @@ uint64_t load_expr(ast_expr_t* expr)
 
 void run_display(struct ast_display_s* node)
 {
+    FILE* stream = stdout;
+
     mem_view_t res = eval_expr(node->target);
-    printf("%.*s\n", res.len, res.ptr);
+    fwrite(res.ptr, res.len, sizeof(char), stream);
+    fputs("\n", stream);
 }
 
 void run_perform_times(struct ast_perform_times_s* node)
