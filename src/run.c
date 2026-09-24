@@ -8,17 +8,22 @@ void run_proc(ast_proc_t* node);
 
 mem_view_t eval_expr(ast_expr_t* expr)
 {
-    if (expr->ref) return (mem_view_t) {
-        .is_special = false,
-        .ptr = expr->ref->base,
-        .len = expr->ref->outer_size,
-    };
-
     // special values.  
     if (!strcmp(expr->content, "SPACES")) return (mem_view_t) { .is_special = true, .literal = ' ' };
     if (!strcmp(expr->content, "SPACE" )) return (mem_view_t) { .is_special = true, .literal = ' ' };
     if (!strcmp(expr->content, "ZEROS" )) return (mem_view_t) { .is_special = true, .literal = '0' };
     if (!strcmp(expr->content, "ZERO"  )) return (mem_view_t) { .is_special = true, .literal = '0' };
+
+    if (!strcmp(expr->content, "HIGH-VALUES")) return (mem_view_t) { .is_special = true, .literal = 0xff };
+    if (!strcmp(expr->content, "HIGH-VALUE" )) return (mem_view_t) { .is_special = true, .literal = 0xff };
+    if (!strcmp(expr->content, "LOW-VALUES" )) return (mem_view_t) { .is_special = true, .literal = 0x00 };
+    if (!strcmp(expr->content, "LOW-VALUE"  )) return (mem_view_t) { .is_special = true, .literal = 0x00 };
+
+    if (expr->ref) return (mem_view_t) {
+        .is_special = false,
+        .ptr = expr->ref->base,
+        .len = expr->ref->outer_size,
+    };
 
     // for literals point into ast buffer.
     return (mem_view_t) {
