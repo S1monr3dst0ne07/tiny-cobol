@@ -5,25 +5,24 @@
 
 void run_proc(ast_proc_t* node);
 
-typedef struct
-    // view into virtual file memory.
-    // may also point into ast literals.
-{
-    char*  ptr;
-    size_t len;
-} mem_view_t;
-
-
 
 mem_view_t eval_expr(ast_expr_t* expr)
 {
     if (expr->ref) return (mem_view_t) {
+        .is_special = false,
         .ptr = expr->ref->base,
         .len = expr->ref->outer_size,
     };
 
+    // special values.  
+    if (!strcmp(expr->content, "SPACES")) return (mem_view_t) { .is_special = true, .literal = ' ' };
+    if (!strcmp(expr->content, "SPACE" )) return (mem_view_t) { .is_special = true, .literal = ' ' };
+    if (!strcmp(expr->content, "ZEROS" )) return (mem_view_t) { .is_special = true, .literal = '0' };
+    if (!strcmp(expr->content, "ZERO"  )) return (mem_view_t) { .is_special = true, .literal = '0' };
+
     // for literals point into ast buffer.
     return (mem_view_t) {
+        .is_special = false,
         .ptr = expr->content,
         // TODO: fix this, this is slow!
         .len = strlen(expr->content),
@@ -40,6 +39,14 @@ uint64_t load_expr(ast_expr_t* expr)
         value = (value * 10) + (string.ptr[i] - '0');
 
     return value;
+}
+
+void run_store(ast_field_t* target, mem_view_t value)
+{
+    if (value.is_special)
+        memset(target->base, value.literal, target->outer_size);
+    else
+        memcpy(target->base, value.ptr, value.len);
 }
 
 void run_display(struct ast_display_s* node)
@@ -67,11 +74,7 @@ void run_move(struct ast_op_s* node)
         "Move into non-field expression\n"
     );
 
-    memcpy(
-        dst->base,
-        src.ptr,
-        src.len
-    );
+    run_store(dst, src);
 }
 
 void run_op(ast_stmt_t* node)

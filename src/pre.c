@@ -6,6 +6,7 @@
 #include "pre.h"
 #include "common.h"
 #include "ast.h"
+#include "run.h"
 
 
 uint64_t pre_field_sizes(ast_field_t* field)
@@ -32,7 +33,10 @@ void pre_field_address(char* base, ast_field_t* field)
 void pre_field_init(ast_field_t* field)
 {
     if (field->value)
-        memcpy(field->base, field->value, strlen(field->value));
+    {
+        mem_view_t res = eval_expr(field->value);
+        run_store(field, res);
+    }
 
     if (field->child) pre_field_init(field->child);
     if (field->next ) pre_field_init(field->next);

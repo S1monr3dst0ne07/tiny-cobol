@@ -1,6 +1,7 @@
 
 #define ATOM_FIELD_LEVEL 77
 
+#include "parse.h"
 #include "common.h"
 #include "lex.h"
 #include "ast.h"
@@ -54,7 +55,7 @@ ast_field_t* parse_field(lex_t* stream)
         else if (!strcmp(token, "pic"))
             node->picture = parse_picture(stream);
         else if (!strcmp(token, "value"))
-            node->value   = strdup(lex_pop(stream));
+            node->value   = parse_expr(stream);
     }
     lex_expect(stream, ".");
 

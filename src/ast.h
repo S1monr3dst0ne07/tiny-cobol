@@ -4,13 +4,15 @@
 #include "common.h"
 #include "lex.h"
 
+struct ast_proc_s;
+
 typedef struct ast_field_s
 {
     uint8_t level;
     char*   name;
 
     char* picture;
-    char* value;
+    struct ast_expr_s* value;
 
     uint64_t occurs;
 
@@ -27,7 +29,7 @@ typedef struct ast_field_s
 
 struct ast_proc_s;
 
-typedef struct 
+typedef struct ast_expr_s
 {
     lex_info_t info;
 
